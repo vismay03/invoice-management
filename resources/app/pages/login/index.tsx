@@ -108,7 +108,7 @@ export default function Login() {
                         </div>
                     </CardContent>
             <CardFooter>
-                <Button className="w-full"> { isLoading && <Spinner/> } Sign in</Button>
+                <Button disabled={isLoading} className="w-full"> { isLoading && <Spinner/> } Sign in</Button>
             </CardFooter>
                 </form>
             </Form>

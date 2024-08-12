@@ -11,30 +11,51 @@ use Maatwebsite\Excel\Concerns\ToModel;
 
 class ProductImport implements ToModel
 {
+    
+    public $category = null;
+
+    public $part = null;
+
+    public $size = null;
+
+    public $color = null;
+
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
-        if(empty($row[5]) || $row[0] == "PartType" ){
+        if (empty($row[5]) || $row[0] == "PartType" || Product::where('part_number', $row[5])->exists()) {
             return;
         }
 
 
 
+        if (!empty($row[0])) {
+            $this->category = $row[0];
+        }
+
+        
+
+        if (!empty($row[1])) {
+            $this->part = $row[1];
+        }
+
+        if (!empty($row[2])) {
+            $this->size = $row[2];
+        }
+
+        if (!empty($row[3])) {
+            $this->color = $row[3];
+        }
 
 
-
-
-
-
-
-        $category_id = !empty($row[0]) ? Category::firstOrCreate(['name'=> $row[0]])->id : Category::query()->latest()->value('id');
-        $part_id = !empty($row[1]) ? Part::firstOrCreate(['name'=> $row[1]])->id : Part::query()->latest()->value('id');
-        $size_id = !empty($row[2]) ? Size::firstOrCreate(['name'=> $row[2]])->id : Size::query()->latest()->value('id');
-        $color_id = !empty($row[3]) ? Color::firstOrCreate(['name'=>$row[3]])->id : Color::query()->latest()->value('id');
+        $category_id =  Category::firstOrCreate(['name' => $this->category])->id;
+        $part_id = Part::firstOrCreate(['name' => $this->part])->id;
+        $size_id = Size::firstOrCreate(['name' => $this->size])->id;
+        $color_id =  Color::firstOrCreate(['name' => $this->color])->id;
 
         $product = Product::create([
             'part_number' => $row[5],
@@ -45,14 +66,10 @@ class ProductImport implements ToModel
             'quantity' => $row[4],
         ]);
 
-
-
         $product->price()->create([
             'single_price' => $row[6],
             'bulk_price' => $row[7],
         ]);
-
-
 
         return $product;
     }

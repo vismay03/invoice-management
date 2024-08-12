@@ -70,9 +70,13 @@ const InvoiceDetails = ({ field, index, form, remove, dispatch, id }: { field: a
           if (amount){
         var total_amount = invoice_details.reduce((total, item)=>{
             console.log(total, item)
-                return total + parseFloat(item.amount);
+                if(item.amount){
+                    return total + parseFloat(item.amount);
+                }
+
+                return total;
             }, 0)
-            form.setValue('total_amount', total_amount.toFixed(2))
+            form.setValue('total_amount', (total_amount ?? 0).toFixed(2))
 
 
         }

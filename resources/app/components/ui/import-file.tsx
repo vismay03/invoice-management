@@ -30,8 +30,9 @@ import { useState } from "react"
 import { LoadingSpinner } from "@/components/Loader"
 
 const formSchema = z.object({
-    file: z.instanceof(File),
+    file: z.instanceof(File).refine((file) => file.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'Only .xlsx allowed'),
 })
+
 const ImportFile = () => {
 
     const { toast } = useToast();
@@ -58,7 +59,7 @@ const ImportFile = () => {
             sendToastMessage(error.type, error.message, toast);
         })
         .finally(() => {
-            setOpen(false) 
+            setOpen(false)
             setIsLoading(false)
         })
     }
@@ -85,9 +86,9 @@ const ImportFile = () => {
                             <FormControl>
                                     <Input type="file" className="w-full"   onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} />
                             </FormControl>
+                            <FormMessage />
                             </FieldItem>
 
-                            <FormMessage />
                         </FormItem>
                     )}
                 />
